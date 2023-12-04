@@ -61,7 +61,7 @@ ivan@ivan-ASUS:~$ cd Inf_Labs
 ivan@ivan-ASUS:~/Inf_Labs$ cd 8_Lab
 ivan@ivan-ASUS:~/Inf_Labs/8_Lab$ ls
 lab8.c
-ivan@ivan-ASUS:~/Inf_Labs/8_Lab$ cc lab8.c
+ivan@ivan-ASUS:~/Inf_Labs/8_Lab$ gcc -std=c99 -Wall -pedantic lab8.c
 lab8.c: In function ‘main’:
 lab8.c:4:28: error: expected ‘;’ before ‘return’
     4 |   printf("Hello, Charles!")
@@ -70,7 +70,7 @@ lab8.c:4:28: error: expected ‘;’ before ‘return’
     5 |     return 0;
       |     ~~~~~~                  
 ivan@ivan-ASUS:~/Inf_Labs/8_Lab$ emacs lab8.c
-ivan@ivan-ASUS:~/Inf_Labs/8_Lab$ cc lab8.c
+ivan@ivan-ASUS:~/Inf_Labs/8_Lab$ gcc -std=c99 -Wall -pedantic lab8.c
 ivan@ivan-ASUS:~/Inf_Labs/8_Lab$ ./a.out
 Hello, Charles!ivan@ivan-ASUS:~/Inf_Labs/8_Lab$ ls
 a.out  lab8.c  lab8.c~  studuo_test  studuo_test.c
