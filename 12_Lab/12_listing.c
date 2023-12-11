@@ -1,84 +1,30 @@
 #include <stdio.h>
-#include <string.h>
+#include <stdlib.h>
 int main(void){
     int state = 1;
     int symbol;
-    int ans = 0;
-    while ((symbol = getchar()) != EOF){
-        switch (state) {
-            case 1:
-                if (symbol == '-'){
-                    state = 2;
-                }
-                else if (symbol == '+'){
-                    state = 1;
-                }
-                else if (symbol == '0'){
-                    ans = ans * 10;
-                }
-                else if (symbol == '1'){
-                    ans = ans * 10 + 1;
-                }
-                else if (symbol == '2'){
-                    ans = ans * 10 + 2;
-                }
-                else if (symbol == '3'){
-                    ans = ans * 10 + 3;
-                }
-                else if (symbol == '4'){
-                    ans = ans * 10 + 4;
-                }
-                else if (symbol == '5'){
-                    ans = ans * 10 + 5;
-                }
-                else if (symbol == '6'){
-                    ans = ans * 10 + 6;
-                }
-                else if (symbol == '7'){
-                    ans = ans * 10 + 7;
-                }
-                else if (symbol == '8'){
-                    ans = ans * 10 + 8;
-                }
-                else if (symbol == '9'){
-                    ans = ans * 10 + 9;
-                }
-                break;
-            case 2:
-                if (symbol == '0'){
-                    ans = ans * 10 + 9;
-                }
-                else if (symbol == '1'){
-                    ans = ans * 10 + 8;
-                }
-                else if (symbol == '2'){
-                    ans = ans * 10 + 7;
-                }
-                else if (symbol == '3'){
-                    ans = ans * 10 + 6;
-                }
-                else if (symbol == '4'){
-                    ans = ans * 10 + 5;
-                }
-                else if (symbol == '5'){
-                    ans = ans * 10 + 4;
-                }
-                else if (symbol == '6'){
-                    ans = ans * 10 + 3;
-                }
-                else if (symbol == '7'){
-                    ans = ans * 10 + 2;
-                }
-                else if (symbol == '8'){
-                    ans = ans * 10 + 1;
-                }
-                else if (symbol == '9'){
-                    ans = ans * 10;
-                }
-                break;
-        default:
-            break;
-        }
+    int ans;
+    scanf("%d", &ans);
+    if (ans > 0){
+        printf("%d\n", ans);
     }
-    printf("%d\n", ans);
+    else{
+
+        int ans1 = abs(ans);
+        int q = 0;
+
+        if (ans1 == 0){
+            q = 1;
+        }
+        while (ans1 != 0){
+            q += 1;
+            ans1 = ans1 / 10;
+        }
+        int dop = 0;
+        for (int i = 0; i < q; i++){
+            dop = dop * 10 + 9;
+        }
+        ans = dop - abs(ans);
+        printf("%d\n", ans);
+    }
 }
