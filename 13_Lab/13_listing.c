@@ -21,29 +21,39 @@ int main(void) {
     unsigned int word = 0;
  
     char chr;
-
+    int f = 0;
     while ((chr = getchar()) != EOF) {
+        //int check = separator(chr);
+        //printf("%ds\n", check);
         if (separator(chr) && word) {
             vowels = vowels & word;
+            //printf("%dss\n", vowels);
             word = 0;
-        } else {
+        } else if (separator(chr) == 0){
+            f++;
             word = word | (lu << (towlower(chr) - 'a'));
-            int k = (towlower(chr) - 'a');
+            //printf("%d\n", word);
         }
     }
-    if (word != 0){
-        vowels = vowels & word;
-    }
-    if (vowels) {
-        for (char i = 'a'; i <= 'z'; i++){
-            if ((vowels & (lu << (towlower(i) - 'a'))) != 0){
-                printf("%c\n", i);
-            }
-        }
-    }                                                   
-    else {
+    if (f == 0){
         printf("\nthere are no vowels included in all words");
     }
 
-    return 0;
+    else{
+        if (word != 0){
+            vowels = vowels & word;
+        }
+        if (vowels) {
+            for (char i = 'a'; i <= 'z'; i++){
+                if ((vowels & (lu << (towlower(i) - 'a'))) != 0){
+                    printf("%c\n", i);
+                }
+            }
+        }                                                   
+        else {
+            printf("\nthere are no vowels included in all words");
+        }
+
+        return 0;
+    }
 }
