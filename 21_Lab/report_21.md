@@ -20,9 +20,13 @@
 ```
 #!/bin/bash
 
-reference_file=~/Документы/test/file_1
-target_directory=~/Документы/test
+if [[ "$1" == "?" ]]; then
+	echo "1 parametr - /path/to/file";
+	echo "2 parametr - /path/to/directory";
+fi;
 
+reference_file="$1"
+target_directory="$2"
 # Получаем хэш указанного файла
 reference_hash=$(md5sum "$reference_file" | awk '{print $1}')
 
@@ -37,8 +41,8 @@ find "$target_directory" -type f | while read file; do
         # Сравниваем хэши
         if [ "$file_hash" = "$reference_hash" ]; then
             if [ -f "$file" ] && [ "$file" != "$reference_file" ]; then
-            	#echo "$file"
-            	#echo "$reference_file"
+            	echo "$file"
+            	echo "$reference_file"
             	echo "Deleting $file"
             	rm "$file"
             fi
