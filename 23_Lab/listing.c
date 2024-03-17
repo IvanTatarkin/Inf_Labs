@@ -27,6 +27,19 @@ binaryTree *findMin(binaryTree *node) {
     return node;
 }
 
+int findDepth(binaryTree *node) {
+    if (node == NULL) {
+        return 0;
+    }
+    int ans = 1;
+    while (node->left != NULL) {
+        node = node->left;
+        ans = ans + 1;
+    }
+    return ans;
+}
+
+
 void deleteNode(binaryTree **root, float key) {
     if (*root == NULL) {
         return;
@@ -37,9 +50,9 @@ void deleteNode(binaryTree **root, float key) {
         deleteNode(&(*root)->right, key);
     } else {
         if ((*root)->left == NULL) {
-        binaryTree *temp = (*root)->right;
-        free(*root);
-        *root = temp;
+            binaryTree *temp = (*root)->right;
+            free(*root);
+            *root = temp;
         } else if ((*root)->right == NULL) {
             binaryTree *temp = (*root)->left;
             free(*root);
@@ -92,18 +105,20 @@ void push(binaryTree ** tree, float data){
 }
 
 
-int minDepth(binaryTree *node){
-    if (node == NULL){
+int findMinDepth(binaryTree *root) {
+    if (root == NULL) {
         return 0;
     }
-    int leftDepth = minDepth(node->left);
-    int rightDepth = minDepth(node->right);
-    
-    if (leftDepth == 0 || rightDepth == 0){
-        return leftDepth + rightDepth + 1;
-    } else {
-        return 1 + (leftDepth < rightDepth ? leftDepth : rightDepth);
+    if (root->left == NULL && root->right == NULL) {
+        return 1;
     }
+    if (root->left == NULL) {
+        return findMinDepth(root->right) + 1;
+    }
+    if (root->right == NULL) {
+        return findMinDepth(root->left) + 1;
+    }
+    return (findMinDepth(root->left) < findMinDepth(root->right) ? findMinDepth(root->left) : findMinDepth(root->right)) + 1;
 }
 
 int main(){
@@ -124,8 +139,8 @@ int main(){
             deleteNode(&tree, number);
         }
         if (strcmp(command, "FindDepth") == 0) {
-            printTree(tree, 0);
-            int ans = minDepth(tree);
+            //printTree(tree, 0);
+            int ans = findDepth(tree);
             printf("%d\n", ans);
         }
     }
