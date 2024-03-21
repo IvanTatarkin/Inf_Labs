@@ -1,30 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "student.h"
+//#include "io.c"
 #define STR_SIZE 24
-
-typedef struct Student_d{
-    char surname[STR_SIZE];
-    char initials[STR_SIZE];
-    char gender;
-    int  group;
-    int  dm, ma, la, cs, hi;
-} Student;
-
-int student_read_bin(Student *s, FILE *in)
-{
-    fread(s->surname,  sizeof(char), STR_SIZE, in);
-    fread(s->initials, sizeof(char), STR_SIZE, in);
-    fread(&(s->gender), sizeof(char), 1, in);
-    fread(&(s->group), sizeof(int), 1, in);
-    fread(&(s->dm), sizeof(int), 1, in);
-    fread(&(s->ma), sizeof(int), 1, in);
-    fread(&(s->la), sizeof(int), 1, in);
-    fread(&(s->cs), sizeof(int), 1, in);
-    fread(&(s->hi), sizeof(int), 1, in);
-
-    return !feof(in);
-}
 
 typedef struct StudentStatistics {
     char name[50];
