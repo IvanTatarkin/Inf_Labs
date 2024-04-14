@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #ifndef _STUDENT_H_
 #define _STUDENT_H_
 
@@ -12,10 +13,10 @@ typedef struct {
     int  group;
     int  dm, ma, la, cs, hi;
 } Student;
-int student_read_txt(Student *s, FILE *in)
-{
-    fscanf(in, "%s", s->surname);
-    fscanf(in, "%s", s->initials);
+
+int student_read_txt(Student *s, FILE *in) {
+    fscanf(in, "%23s", s->surname); // Читаем не более 23 символов, чтобы оставить место для нулевого символа
+    fscanf(in, "%23s", s->initials); // Читаем не более 23 символов, чтобы оставить место для нулевого символа
     fscanf(in, " %c", &(s->gender));
     fscanf(in, "%d", &(s->group));
     fscanf(in, "%d", &(s->dm));
@@ -24,8 +25,12 @@ int student_read_txt(Student *s, FILE *in)
     fscanf(in, "%d", &(s->cs));
     fscanf(in, "%d", &(s->hi));
 
+    s->surname[STR_SIZE - 1] = '\0'; // Гарантированно завершаем строку фамилии нулевым символом
+    s->initials[STR_SIZE - 1] = '\0'; // Гарантированно завершаем строку инициалов нулевым символом
+
     return !feof(in);
 }
+
 
 int student_read_bin(Student *s, FILE *in)
 {
@@ -44,8 +49,11 @@ int student_read_bin(Student *s, FILE *in)
 
 void student_write_bin(Student *s, FILE *out)
 {
-    fwrite(s->surname,  sizeof(char), STR_SIZE, out);
-    fwrite(s->initials, sizeof(char), STR_SIZE, out);
+    size_t surname_len = strlen(s->surname) + 1; // Длина строки фамилии, включая нулевой символ
+    size_t initials_len = strlen(s->initials) + 1; // Длина строки инициалов, включая нулевой символ
+
+    fwrite(s->surname,  sizeof(char), surname_len, out);
+    fwrite(s->initials, sizeof(char), initials_len, out);
     fwrite(&(s->gender), sizeof(char), 1, out);
     fwrite(&(s->group), sizeof(int), 1, out);
     fwrite(&(s->dm), sizeof(int), 1, out);
@@ -57,6 +65,9 @@ void student_write_bin(Student *s, FILE *out)
 
 void student_print(Student *s)
 {
+    s->surname[STR_SIZE - 1] = '\0'; // Гарантированно завершаем строку фамилии нулевым символом
+    s->initials[STR_SIZE - 1] = '\0'; // Гарантированно завершаем строку инициалов нулевым символом
+
     printf("Name: %s %s\n", s->surname, s->initials);
     printf("Gender: %c\n", s->gender);
     printf("Group: %d\n", s->group);

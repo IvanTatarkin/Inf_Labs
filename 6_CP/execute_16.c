@@ -57,13 +57,14 @@ int main(int argc, char *argv[])
         else{
             students[i].gender = 'N';
         }
-        students[i].score = sum;
+        students[i].score = sum_mark(&student);
         i++;
     }
     qsort(students, i, sizeof(struct StudentStatistics), compare);
 
     for (int j = 0; j < i ; j++) {
         if (students[j].score == sum && students[j].gender == 'F'){
+            printf("%d\n", students[j].score);
             printf("%s\n", students[j].name);
         }
     }

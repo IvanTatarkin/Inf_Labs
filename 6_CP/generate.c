@@ -2,16 +2,14 @@
 #include <stdlib.h>
 #include "student.h"
 
-
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     if (argc != 3) {
         printf("Usage:\n\t./generate FILE_FROM FILE_TO\n");
         exit(0);
     }
 
-    FILE *in  = fopen(argv[1], "r");
-    FILE *out = fopen(argv[2], "w");
+    FILE *in = fopen(argv[1], "r");
+    FILE *out = fopen(argv[2], "wb"); // Открываем файл в режиме бинарной записи
 
     if (!in || !out) {
         printf("I/O Error: can't open file.\n");
@@ -29,4 +27,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-

@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 
-#define MAX_SIZE 100
+#define MAX_SIZE 128
 
 typedef struct {
     int items[MAX_SIZE];
@@ -10,7 +11,7 @@ typedef struct {
     int rear;
 } Deque;
 
-void Deque_сreate(Deque* deque) {
+void Deque_create(Deque* deque) {
     deque->front = -1;
     deque->rear = -1;
 }
@@ -18,7 +19,6 @@ void Deque_сreate(Deque* deque) {
 int deque_is_empty(Deque* deque) {
     return (deque->front == -1 && deque->rear == -1);
 }
-
 
 void deque_push_front(Deque* deque, int item) {
     if (deque_is_empty(deque)) {
@@ -30,6 +30,9 @@ void deque_push_front(Deque* deque, int item) {
         deque->front = deque->front - 1;
     }
     deque->items[deque->front] = item;
+    if (deque->rear == -1) {
+        deque->rear = deque->front;
+    }
 }
 
 void deque_push_back(Deque* deque, int item) {
@@ -99,91 +102,96 @@ void deque_print(Deque* deque) {
     printf("%d\n", deque->items[deque->rear]);
 }
 
-void merge(Deque* result, Deque* deque1, Deque* deque2) {
-    Deque_сreate(result);
-
-    while (!deque_is_empty(deque1) && !deque_is_empty(deque2)) {
-        if (deque1->items[deque1->front] < deque2->items[deque2->front]) {
-            deque_push_back(result, deque_pop_front(deque1));
+void merge(Deque* deque, int start, int mid, int end) {
+    int left_size = (mid - start + 1 + MAX_SIZE) % MAX_SIZE;
+    int right_size = (end - mid + MAX_SIZE) % MAX_SIZE;
+    Deque left_half, right_half;
+    Deque_create(&left_half);
+    Deque_create(&right_half);
+    int i = start;
+    for (int j = 0; j < left_size; j++) {
+        deque_push_back(&left_half, deque->items[i]);
+        i = (i + 1) % MAX_SIZE;
+    }
+    for (int j = 0; j < right_size; j++) {
+        deque_push_back(&right_half, deque->items[i]);
+        i = (i + 1) % MAX_SIZE;
+    }
+    i = start;
+    while (!deque_is_empty(&left_half) && !deque_is_empty(&right_half)) {
+        if (left_half.items[left_half.front] <= right_half.items[right_half.front]) {
+            deque->items[i] = deque_pop_front(&left_half);
         } else {
-            deque_push_back(result, deque_pop_front(deque2));
+            deque->items[i] = deque_pop_front(&right_half);
         }
+        i = (i + 1) % MAX_SIZE;
     }
-
-    while (!deque_is_empty(deque1)) {
-        deque_push_back(result, deque_pop_front(deque1));
+    while (!deque_is_empty(&left_half)) {
+        deque->items[i] = deque_pop_front(&left_half);
+        i = (i + 1) % MAX_SIZE;
     }
-
-    while (!deque_is_empty(deque2)) {
-        deque_push_back(result, deque_pop_front(deque2));
+    while (!deque_is_empty(&right_half)) {
+        deque->items[i] = deque_pop_front(&right_half);
+        i = (i + 1) % MAX_SIZE;
     }
 }
 
+void mergeSortDeque(Deque* deque, int start, int end) {
+    if (start < end) {
+        int mid = start + (end - start) / 2;
+        mergeSortDeque(deque, start, mid);
+        mergeSortDeque(deque, mid + 1, end);
+        merge(deque, start, mid, end);
+    } else if (start > end) {
+        int mid;
+        if (start <= end + MAX_SIZE) {
+            mid = (start + end + MAX_SIZE) / 2 % MAX_SIZE;
+        } else {
+            mid = (start + end) / 2;
+        }
+        mergeSortDeque(deque, start, mid);
+        mergeSortDeque(deque, (mid + 1) % MAX_SIZE, end);
+        merge(deque, start, mid, end);
+    }
+}
+
+void deque_sort(Deque* deque) {
+    mergeSortDeque(deque, deque->front, deque->rear);
+}
+
+void sigint_handler(int signum) {
+    printf("\nReceived SIGINT signal. Exiting.\n");
+    exit(0);
+}
+
 int main() {
-    char command[100];
+    signal(SIGINT, sigint_handler);
+    char command[100] = ""; // Инициализация массива command
     Deque deque1;
-    Deque deque2;
     int number;
-    int index;
-    Deque_сreate(&deque1);
-        while(strcmp(command, "stop") != 0) {
-            scanf("%s", command);
-            if (strcmp(command, "deque_is_empty") == 0) {
-                int ans = deque_is_empty(&deque1);
-                printf("%d\n", ans);
-            }
-            if (strcmp(command, "deque_push_front") == 0) {
-                scanf("%d\n", &number);
-                deque_push_front(&deque1, number);
-            }
-            if (strcmp(command, "deque_push_back") == 0) {
-                scanf("%d\n", &number);
-                deque_push_back(&deque1, number);
-            }
-            if (strcmp(command, "deque_pop_front") == 0) {
-                deque_pop_front(&deque1);
-            }
-            if (strcmp(command, "deque_pop_back") == 0) {
-                deque_pop_back(&deque1);
-            }
-            if (strcmp(command, "deque_print") == 0) {
-                deque_print(&deque1);
-            }
-            if (strcmp(command, "deque_size") == 0) {
-               printf("%d\n", deque_size(&deque1));
-            }
+    Deque_create(&deque1);
+    while(strcmp(command, "stop") != 0) {
+        scanf("%s", command);
+        if (strcmp(command, "deque_is_empty") == 0) {
+            int ans = deque_is_empty(&deque1);
+            printf("%d\n", ans);
+        } else if (strcmp(command, "deque_push_front") == 0) {
+            scanf("%d", &number);
+            deque_push_front(&deque1, number);
+        } else if (strcmp(command, "deque_push_back") == 0) {
+            scanf("%d", &number);
+            deque_push_back(&deque1, number);
+        } else if (strcmp(command, "deque_pop_front") == 0) {
+            deque_pop_front(&deque1);
+        } else if (strcmp(command, "deque_pop_back") == 0) {
+            deque_pop_back(&deque1);
+        } else if (strcmp(command, "deque_print") == 0) {
+            deque_print(&deque1);
+        } else if (strcmp(command, "deque_size") == 0) {
+            printf("%d\n", deque_size(&deque1));
+        } else if (strcmp(command, "deque_merge") == 0) {
+           deque_sort(&deque1);
         }
-    char command2[100];
-    Deque_сreate(&deque2);
-        while(strcmp(command2, "stop") != 0) {
-            scanf("%s", command2);
-            if (strcmp(command2, "deque_is_empty") == 0) {
-                int ans = deque_is_empty(&deque2);
-                printf("%d\n", ans);
-            }
-            if (strcmp(command2, "deque_push_front") == 0) {
-                scanf("%d\n", &number);
-                deque_push_front(&deque2, number);
-            }
-            if (strcmp(command2, "deque_push_back") == 0) {
-                scanf("%d\n", &number);
-                deque_push_back(&deque2, number);
-            }
-            if (strcmp(command2, "deque_pop_front") == 0) {
-                deque_pop_front(&deque2);
-            }
-            if (strcmp(command2, "deque_pop_back") == 0) {
-                deque_pop_back(&deque2);
-            }
-            if (strcmp(command2, "deque_print") == 0) {
-                deque_print(&deque2);
-            }
-            if (strcmp(command2, "deque_size") == 0) {
-                printf("%d\n", deque_size(&deque2));
-            }
-        }
-    Deque result;
-    merge(&result, &deque1, &deque2);
-    deque_print(&result);
+    }
     return 0;
 }
